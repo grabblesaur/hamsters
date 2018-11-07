@@ -4,6 +4,10 @@ import android.content.Context;
 
 import javax.inject.Singleton;
 
+import bogdanovbayar.mojohamster.data.MainRepository;
+import bogdanovbayar.mojohamster.data.local.LocalDataSource;
+import bogdanovbayar.mojohamster.data.remote.ApiService;
+import bogdanovbayar.mojohamster.data.remote.RemoteDataSource;
 import dagger.Module;
 import dagger.Provides;
 import retrofit2.Retrofit;
@@ -34,5 +38,30 @@ public class AppModule {
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build();
+    }
+
+    @Singleton
+    @Provides
+    public ApiService provideApiService(Retrofit retrofit) {
+        return retrofit.create(ApiService.class);
+    }
+
+    @Singleton
+    @Provides
+    public RemoteDataSource provideRemoteDataSource(ApiService apiService) {
+        return new RemoteDataSource(apiService);
+    }
+
+    @Singleton
+    @Provides
+    public LocalDataSource provideLocalDataSource() {
+        return new LocalDataSource();
+    }
+
+    @Singleton
+    @Provides
+    public MainRepository provideMainRepository(RemoteDataSource remoteDataSource,
+                                                LocalDataSource localDataSource) {
+        return new MainRepository(remoteDataSource, localDataSource);
     }
 }
