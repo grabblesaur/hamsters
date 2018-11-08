@@ -1,10 +1,14 @@
 package bogdanovbayar.mojohamster.di;
 
+import android.arch.persistence.room.Room;
 import android.content.Context;
 
 import javax.inject.Singleton;
 
+import bogdanovbayar.mojohamster.BuildConfig;
 import bogdanovbayar.mojohamster.data.MainRepository;
+import bogdanovbayar.mojohamster.data.local.AppDataBase;
+import bogdanovbayar.mojohamster.data.local.HamsterDao;
 import bogdanovbayar.mojohamster.data.local.LocalDataSource;
 import bogdanovbayar.mojohamster.data.remote.ApiService;
 import bogdanovbayar.mojohamster.data.remote.RemoteDataSource;
@@ -54,14 +58,30 @@ public class AppModule {
 
     @Singleton
     @Provides
-    public LocalDataSource provideLocalDataSource() {
-        return new LocalDataSource();
+    public AppDataBase provideRoomDatabase(Context context) {
+        return Room.databaseBuilder(context, AppDataBase.class, BuildConfig.APPLICATION_ID)
+                .fallbackToDestructiveMigration()
+                .allowMainThreadQueries()
+                .build();
     }
 
     @Singleton
     @Provides
-    public MainRepository provideMainRepository(RemoteDataSource remoteDataSource,
+    public HamsterDao provideCatalogDao(AppDataBase appDataBase) {
+        return appDataBase.hamsterDao();
+    }
+
+    @Singleton
+    @Provides
+    public LocalDataSource provideLocalDataSource(HamsterDao hamsterDao) {
+        return new LocalDataSource(hamsterDao);
+    }
+
+    @Singleton
+    @Provides
+    public MainRepository provideMainRepository(Context context,
+                                                RemoteDataSource remoteDataSource,
                                                 LocalDataSource localDataSource) {
-        return new MainRepository(remoteDataSource, localDataSource);
+        return new MainRepository(context, remoteDataSource, localDataSource);
     }
 }
