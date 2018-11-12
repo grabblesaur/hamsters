@@ -5,6 +5,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -13,6 +15,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.annotation.GlideModule;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import bogdanovbayar.mojohamster.R;
@@ -21,25 +24,68 @@ import bogdanovbayar.mojohamster.data.model.Hamster;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class HamsterAdapter extends RecyclerView.Adapter<HamsterAdapter.HamsterViewHolder> {
+public class HamsterAdapter
+        extends RecyclerView.Adapter<HamsterAdapter.HamsterViewHolder>
+        implements Filterable {
 
     private ViewGroup mViewGroup;
 
     public interface HamsterAdapterListener {
         void onItemClicked(Hamster hamster);
+        void onSearch(boolean b);
     }
 
     private List<Hamster> mHamsterList;
+    private List<Hamster> mHamsterFilteredList;
     private HamsterAdapterListener mListener;
 
     public HamsterAdapter(List<Hamster> hamsterList, HamsterAdapterListener listener) {
         mHamsterList = hamsterList;
+        mHamsterFilteredList = hamsterList;
         mListener = listener;
     }
 
     public void replace(List<Hamster> hamsterList) {
+        mHamsterFilteredList = hamsterList;
         mHamsterList = hamsterList;
         notifyDataSetChanged();
+    }
+
+    @Override
+    public Filter getFilter() {
+        return new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence charSequence) {
+                String charString = charSequence.toString();
+                if (charString.isEmpty()) {
+                    mHamsterFilteredList = mHamsterList;
+                } else {
+                    List<Hamster> filteredList = new ArrayList<>();
+                    for (Hamster hamster : mHamsterList) {
+                        if (hamster.getTitle().toLowerCase().contains(charString.toLowerCase())) {
+                            filteredList.add(hamster);
+                        }
+                    }
+                    mHamsterFilteredList = filteredList;
+                }
+                FilterResults filterResults = new FilterResults();
+                filterResults.values = mHamsterFilteredList;
+                return filterResults;
+            }
+
+            @Override
+            protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+                mHamsterFilteredList = (List<Hamster>) filterResults.values;
+                if (mListener != null) {
+                    if (mHamsterFilteredList.isEmpty()) {
+                        mListener.onSearch(false);
+                    } else {
+                        mListener.onSearch(true);
+                        notifyDataSetChanged();
+                    }
+                }
+            }
+        };
     }
 
     @NonNull
@@ -53,12 +99,12 @@ public class HamsterAdapter extends RecyclerView.Adapter<HamsterAdapter.HamsterV
 
     @Override
     public void onBindViewHolder(@NonNull HamsterViewHolder hamsterViewHolder, int i) {
-        hamsterViewHolder.onBind(mHamsterList.get(i));
+        hamsterViewHolder.onBind(mHamsterFilteredList.get(hamsterViewHolder.getAdapterPosition()));
     }
 
     @Override
     public int getItemCount() {
-        return mHamsterList.size();
+        return mHamsterFilteredList.size();
     }
 
     public class HamsterViewHolder extends RecyclerView.ViewHolder {

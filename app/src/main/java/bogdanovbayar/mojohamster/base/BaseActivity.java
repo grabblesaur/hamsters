@@ -63,7 +63,9 @@ public abstract class BaseActivity extends AppCompatActivity
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setTitle("");
         toolbarWithoutFragments.getNavigationIcon().setColorFilter(getResources().getColor(android.R.color.white), PorterDuff.Mode.SRC_ATOP);
-        toolbarWithoutFragments.setNavigationOnClickListener(v -> onBackPressed());
+        toolbarWithoutFragments.setNavigationOnClickListener(v -> {
+            onBackPressed();
+        });
     }
 
     public void hideKeyboard() {

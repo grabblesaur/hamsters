@@ -3,6 +3,9 @@ package bogdanovbayar.mojohamster.ui;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -18,6 +21,12 @@ import butterknife.BindView;
 
 public class MainActivity extends BaseActivity implements MainContract.MainView {
 
+    private static final String TAG = MainActivity.class.getSimpleName();
+
+    @BindView(R.id.main_toolbar)
+    Toolbar mToolbar;
+    @BindView(R.id.main_searchview)
+    SearchView mSearchView;
     @BindView(R.id.main_recyclerview)
     RecyclerView mRecyclerView;
 
@@ -42,11 +51,35 @@ public class MainActivity extends BaseActivity implements MainContract.MainView 
     }
 
     private void initViews() {
-        mAdapter = new HamsterAdapter(new ArrayList<>(0), hamster -> {
-            Toast.makeText(this, hamster.getTitle(), Toast.LENGTH_SHORT).show();
-        });
+        mAdapter = new HamsterAdapter(new ArrayList<>(0),
+                new HamsterAdapter.HamsterAdapterListener() {
+                    @Override
+                    public void onItemClicked(Hamster hamster) {
+                        Toast.makeText(MainActivity.this, hamster.getTitle(), Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onSearch(boolean b) {
+                        Log.i(TAG, "onSearch: " + b);
+                    }
+                });
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.setAdapter(mAdapter);
+
+        mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                mAdapter.getFilter().filter(s);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                mAdapter.getFilter().filter(s);
+                return false;
+            }
+        });
+
         mPresenter.getData();
     }
 
