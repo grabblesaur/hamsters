@@ -2,7 +2,7 @@ package bogdanovbayar.mojohamster.di;
 
 import javax.inject.Singleton;
 
-import bogdanovbayar.mojohamster.ui.MainActivity;
+import bogdanovbayar.mojohamster.ui.main.MainActivity;
 import dagger.Component;
 
 @Singleton

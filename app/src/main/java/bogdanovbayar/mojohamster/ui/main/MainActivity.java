@@ -1,9 +1,10 @@
-package bogdanovbayar.mojohamster.ui;
+package bogdanovbayar.mojohamster.ui.main;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,10 +15,10 @@ import bogdanovbayar.mojohamster.R;
 import bogdanovbayar.mojohamster.base.BaseActivity;
 import bogdanovbayar.mojohamster.data.model.Hamster;
 import bogdanovbayar.mojohamster.di.Application;
+import bogdanovbayar.mojohamster.ui.detail.DetailActivity;
 import butterknife.BindView;
 
 public class MainActivity extends BaseActivity implements MainContract.MainView {
-
     @BindView(R.id.main_recyclerview)
     RecyclerView mRecyclerView;
 
@@ -43,10 +44,13 @@ public class MainActivity extends BaseActivity implements MainContract.MainView 
 
     private void initViews() {
         mAdapter = new HamsterAdapter(new ArrayList<>(0), hamster -> {
-            Toast.makeText(this, hamster.getTitle(), Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(MainActivity.this, DetailActivity.class);
+            intent.putExtra(DetailActivity.EXTRA_HAMSTER, hamster);
+            startActivity(intent);
         });
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.setAdapter(mAdapter);
+        mRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
         mPresenter.getData();
     }
 

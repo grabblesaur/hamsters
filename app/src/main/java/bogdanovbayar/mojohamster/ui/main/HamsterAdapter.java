@@ -1,17 +1,21 @@
-package bogdanovbayar.mojohamster.ui;
+package bogdanovbayar.mojohamster.ui.main;
 
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.annotation.GlideModule;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 
 import java.util.List;
 
@@ -22,6 +26,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class HamsterAdapter extends RecyclerView.Adapter<HamsterAdapter.HamsterViewHolder> {
+
+    private static final String TAG = HamsterAdapter.class.getSimpleName();
 
     private ViewGroup mViewGroup;
 
@@ -53,7 +59,7 @@ public class HamsterAdapter extends RecyclerView.Adapter<HamsterAdapter.HamsterV
 
     @Override
     public void onBindViewHolder(@NonNull HamsterViewHolder hamsterViewHolder, int i) {
-        hamsterViewHolder.onBind(mHamsterList.get(i));
+        hamsterViewHolder.onBind(mHamsterList.get(i), i);
     }
 
     @Override
@@ -65,6 +71,8 @@ public class HamsterAdapter extends RecyclerView.Adapter<HamsterAdapter.HamsterV
 
         @BindView(R.id.item_parent_layout)
         LinearLayout mParentLayout;
+        @BindView(R.id.item_image_container)
+        FrameLayout mImageContainer;
         @BindView(R.id.item_image)
         ImageView mImageView;
         @BindView(R.id.item_title)
@@ -77,7 +85,7 @@ public class HamsterAdapter extends RecyclerView.Adapter<HamsterAdapter.HamsterV
             ButterKnife.bind(this, itemView);
         }
 
-        public void onBind(Hamster hamster) {
+        public void onBind(Hamster hamster, int position) {
             mParentLayout.setOnClickListener(v -> {
                 if (mListener != null) {
                     mListener.onItemClicked(hamster);
@@ -88,6 +96,20 @@ public class HamsterAdapter extends RecyclerView.Adapter<HamsterAdapter.HamsterV
 
             GlideApp.with(mViewGroup)
                     .load(hamster.getImageUrl())
+                    .centerCrop()
+                    .listener(new RequestListener<Drawable>() {
+                        @Override
+                        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                            mImageContainer.setVisibility(View.GONE);
+                            return false;
+                        }
+
+                        @Override
+                        public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                            mImageContainer.setVisibility(View.VISIBLE);
+                            return false;
+                        }
+                    })
                     .into(mImageView);
         }
     }

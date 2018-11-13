@@ -1,4 +1,4 @@
-package bogdanovbayar.mojohamster.ui;
+package bogdanovbayar.mojohamster.ui.main;
 
 import java.util.List;
 

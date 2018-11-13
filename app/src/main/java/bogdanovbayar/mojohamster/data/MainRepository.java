@@ -19,6 +19,8 @@ public class MainRepository {
     private LocalDataSource mLocalDataSource;
     private Context mContext;
 
+    private List<Hamster> mCache;
+
     public MainRepository(Context context, RemoteDataSource remoteDataSource, LocalDataSource localDataSource) {
         mContext = context;
         mRemoteDataSource = remoteDataSource;
@@ -26,11 +28,17 @@ public class MainRepository {
     }
 
     public void getData(HamsterLoadCallback callback) {
+        // if Cache != null return cache, else
         // if !isOnline then get local data, otherwise get remote data
-        if (isOnline()) {
-            getRemoteData(callback);
+        if (mCache == null) {
+            if (isOnline()) {
+                getRemoteData(callback);
+            } else {
+                getLocalData(callback);
+            }
         } else {
-            getLocalData(callback);
+            Log.i(TAG, "getCacheData: ");
+            callback.onHamsterLoaded(mCache);
         }
 
     }
@@ -41,6 +49,7 @@ public class MainRepository {
             @Override
             public void onHamsterLoaded(List<Hamster> hamsterList) {
                 saveLocalData(hamsterList);
+                refreshCache(hamsterList);
                 callback.onHamsterLoaded(hamsterList);
             }
 
@@ -56,6 +65,7 @@ public class MainRepository {
         mLocalDataSource.getData(new HamsterLoadCallback() {
             @Override
             public void onHamsterLoaded(List<Hamster> hamsterList) {
+                refreshCache(hamsterList);
                 callback.onHamsterLoaded(hamsterList);
             }
 
@@ -76,5 +86,9 @@ public class MainRepository {
                 (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = cm.getActiveNetworkInfo();
         return netInfo != null && netInfo.isConnectedOrConnecting();
+    }
+
+    private void refreshCache(List<Hamster> hamsterList) {
+        mCache = hamsterList;
     }
 }

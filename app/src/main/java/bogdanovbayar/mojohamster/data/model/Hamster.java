@@ -6,9 +6,11 @@ import android.support.annotation.NonNull;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
+
 @Entity(primaryKeys = {"mTitle", "mDescription"})
 @TypeConverters(DataTypeConverter.class)
-public class Hamster {
+public class Hamster implements Serializable {
 
     @NonNull
     @SerializedName("title")

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="default_padding">12dp</dimen>
+    <dimen name="item_image_height">125dp</dimen>
+    <dimen name="detail_image_height">250dp</dimen>
+</resources>
