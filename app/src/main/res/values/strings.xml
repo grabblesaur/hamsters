@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">MojoHamster</string>
     <string name="about">О программе</string>
-    <string name="about_text">Тестовое задание выполнил Богданов Б.А.</string>
+    <string name="about_text">Тестовое задание выполнил Богданов Б.А.\nbogdanov.bayar@gmail.com</string>
     <string name="hh_ref">ссылка на hh.ru</string>
     <string name="share">Поделиться</string>
 </resources>
