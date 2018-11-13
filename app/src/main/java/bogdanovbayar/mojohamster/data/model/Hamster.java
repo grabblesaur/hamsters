@@ -16,6 +16,9 @@ public class Hamster implements Serializable {
     @SerializedName("title")
     private String mTitle;
 
+    @SerializedName("pinned")
+    private boolean mPinned;
+
     @NonNull
     @SerializedName("description")
     private String mDescription;
@@ -49,10 +52,19 @@ public class Hamster implements Serializable {
         mImageUrl = imageUrl;
     }
 
+    public boolean isPinned() {
+        return mPinned;
+    }
+
+    public void setPinned(boolean pinned) {
+        mPinned = pinned;
+    }
+
     @Override
     public String toString() {
         return "Hamster{" +
                 "mTitle='" + mTitle + '\'' +
+                ", mPinned=" + mPinned +
                 ", mDescription='" + mDescription + '\'' +
                 ", mImageUrl='" + mImageUrl + '\'' +
                 '}';

@@ -56,14 +56,18 @@ public abstract class BaseActivity extends AppCompatActivity
         toolbarWithoutFragments.setNavigationOnClickListener(v -> onBackPressed());
     }
 
-    public void setUpToolbarWithoutFragmentsWithWhiteButton(Toolbar toolbarWithoutFragments) {
+    public void setUpToolbarWithoutFragmentsWithWhiteButton(Toolbar toolbarWithoutFragments, boolean hasNavigation) {
         setSupportActionBar(toolbarWithoutFragments);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(hasNavigation);
+        getSupportActionBar().setHomeButtonEnabled(hasNavigation);
+        getSupportActionBar().setDisplayShowHomeEnabled(hasNavigation);
         getSupportActionBar().setTitle("");
-        toolbarWithoutFragments.getNavigationIcon().setColorFilter(getResources().getColor(android.R.color.white), PorterDuff.Mode.SRC_ATOP);
-        toolbarWithoutFragments.setNavigationOnClickListener(v -> onBackPressed());
+        if (hasNavigation) {
+            toolbarWithoutFragments.getNavigationIcon().setColorFilter(getResources().getColor(android.R.color.white), PorterDuff.Mode.SRC_ATOP);
+            toolbarWithoutFragments.setNavigationOnClickListener(v -> {
+                onBackPressed();
+            });
+        }
     }
 
     public void hideKeyboard() {

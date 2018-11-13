@@ -3,4 +3,5 @@
     <dimen name="default_padding">12dp</dimen>
     <dimen name="item_image_height">125dp</dimen>
     <dimen name="detail_image_height">250dp</dimen>
+    <dimen name="content_margin">8dp</dimen>
 </resources>
